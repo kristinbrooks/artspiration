@@ -52,11 +52,17 @@ lib/
 test/
   widget_test.dart            dice behavior, screen smoke tests
   app_store_test.dart         persistence against real files on disk
-tool/gallery_preview.dart     design-preview entrypoint (not shipped)
+tool/
+  gallery_preview.dart        design-preview entrypoint (not shipped)
+  make_icons.py               regenerates the launcher icons
 ```
 
 `tool/gallery_preview.dart` boots into a chosen state so styling can be checked
 without tapping through — see its header for the `--dart-define` options.
+
+`tool/make_icons.py` draws the launcher icons from the same proportions as the
+in-app die logo, so the icon and the header stay the same mark. Change the logo
+and rerun it; it needs no image library.
 
 ## Design notes
 
