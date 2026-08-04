@@ -26,8 +26,17 @@ class AppColors {
   static const emptyTitle = Color(0xFF8A7C62);
   static const emptyBody = Color(0xFFA3977F);
 
-  /// Disabled reroll fill, with [emptyBody] as its text color.
-  static const disabledFill = Color(0xFFE9E2D0);
+  // Inert dice — locked or switched off — use this ramp rather than the warm
+  // muted browns above. It replaces the handoff's #E9E2D0 disabled fill, which
+  // read as faded paper rather than as unavailable. Near-neutral, only a few
+  // points of blue over red: enough to sit cooler than the warm paper without
+  // the ramp itself reading as blue.
+  static const offSurface = Color(0xFFE5E6E7);
+  static const offShadow = Color(0xFFB5B6B9);
+  static const offBorder = Color(0xFF9C9DA1);
+
+  /// Text and pill fill on a switched-off die.
+  static const offInk = Color(0xFF83858A);
 
   static const dashedRule = Color(0xFFB3A688);
   static const removeRed = Color(0xFFA34A3A);

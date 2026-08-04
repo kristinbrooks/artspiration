@@ -82,6 +82,9 @@ the last row back below the fold:
 - **The subhead tagline is gone**, replaced by the Choose dice button. There was
   room in the header for one or the other, and the tagline restated what the
   Lock and Reroll buttons already say.
+- **Inert dice use a near-neutral grey ramp**, not the handoff's warm `#E9E2D0`
+  disabled fill, which read as faded paper rather than unavailable. See the
+  `off*` colors in `tokens.dart`; both locked and switched-off dice use them.
 
 ## Storage
 

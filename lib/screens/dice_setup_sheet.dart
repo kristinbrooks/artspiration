@@ -121,17 +121,16 @@ class _DieRow extends StatelessWidget {
         label: category.label,
         child: Sticker(
           borderRadius: category.borderRadius,
-          background:
-              enabled ? AppColors.cardSurface : AppColors.disabledFill,
-          borderColor: enabled ? AppColors.ink : AppColors.emptyBody,
-          shadowColor: enabled ? AppColors.ink : AppColors.dashedRule,
+          background: enabled ? AppColors.cardSurface : AppColors.offSurface,
+          borderColor: enabled ? AppColors.ink : AppColors.offBorder,
+          shadowColor: enabled ? AppColors.ink : AppColors.offShadow,
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           child: Row(
             children: [
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
                 decoration: BoxDecoration(
-                  color: enabled ? category.accent : AppColors.emptyBody,
+                  color: enabled ? category.accent : AppColors.offInk,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -169,7 +168,7 @@ class _StateBadge extends StatelessWidget {
         color: enabled ? AppColors.ink : const Color(0x00000000),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: enabled ? AppColors.ink : AppColors.emptyBody,
+          color: enabled ? AppColors.ink : AppColors.offBorder,
           width: 1.5,
         ),
       ),
@@ -178,7 +177,7 @@ class _StateBadge extends StatelessWidget {
         style: AppText.nunito(
           10,
           weight: 800,
-          color: enabled ? AppColors.cream : AppColors.emptyBody,
+          color: enabled ? AppColors.cream : AppColors.offInk,
           letterSpacing: 0.2,
         ),
       ),
