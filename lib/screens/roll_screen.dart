@@ -5,6 +5,7 @@ import '../state/app_state.dart';
 import '../theme/tokens.dart';
 import '../widgets/die_card.dart';
 import '../widgets/sticker.dart';
+import 'dice_setup_sheet.dart';
 
 class RollScreen extends StatelessWidget {
   const RollScreen({super.key, required this.state, required this.topInset});
@@ -23,8 +24,10 @@ class RollScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const _RollHeader(),
-                const SizedBox(height: 18), // 16px column gap + 2px header margin
+                _RollHeader(state: state),
+                // Was 18 (16px column gap + 2px header margin); trimmed to pay
+                // for the picker's height on the subhead line.
+                const SizedBox(height: 10),
                 _DiceGrid(state: state),
               ],
             ),
@@ -61,7 +64,9 @@ class RollScreen extends StatelessWidget {
 }
 
 class _RollHeader extends StatelessWidget {
-  const _RollHeader();
+  const _RollHeader({required this.state});
+
+  final ArtspirationState state;
 
   @override
   Widget build(BuildContext context) {
@@ -88,11 +93,67 @@ class _RollHeader extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 4),
-        Text(
-          'Lock what you like, reroll the rest',
-          style: AppText.nunito(13, color: AppColors.mutedBrown),
+        // The picker shares the subhead's line rather than taking one of its
+        // own: the grid clears an iPhone screen by only a few pixels, and an
+        // extra row pushes the last dice back below the fold. It rides here
+        // rather than beside the title because Kalam at 28px leaves no room.
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Flexible(
+              child: Text(
+                'Lock what you like, reroll the rest',
+                maxLines: 1,
+                style: AppText.nunito(13, color: AppColors.mutedBrown),
+              ),
+            ),
+            const SizedBox(width: 8),
+            _DicePicker(state: state),
+          ],
         ),
       ],
+    );
+  }
+}
+
+/// Opens the setup sheet, and doubles as a readout of how many dice are in
+/// play — otherwise a switched-off die is only visible by scanning the grid.
+class _DicePicker extends StatelessWidget {
+  const _DicePicker({required this.state});
+
+  final ArtspirationState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final enabled = state.enabledCategories.length;
+    final total = DieCategory.values.length;
+    // Filled when some dice are sitting out, so a reduced set is obvious
+    // without counting greyed cards.
+    final reduced = enabled < total;
+
+    return GestureDetector(
+      onTap: () => showDiceSetupSheet(context, state),
+      child: Semantics(
+        button: true,
+        label: '$enabled of $total dice in play. Choose dice.',
+        child: Sticker(
+          rotation: 1.5,
+          borderRadius: AppShape.radii(11, 8, 11, 8),
+          background: reduced ? AppColors.ink : AppColors.cardSurface,
+          borderWidth: 2,
+          showShadow: false,
+          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+          child: Text(
+            '$enabled/$total',
+            style: AppText.nunito(
+              12,
+              weight: 800,
+              color: reduced ? AppColors.cream : AppColors.ink,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

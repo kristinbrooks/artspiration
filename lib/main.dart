@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'data/gallery_store.dart';
+import 'data/app_store.dart';
 import 'screens/home_shell.dart';
 import 'state/app_state.dart';
 import 'theme/tokens.dart';
@@ -10,7 +10,7 @@ Future<void> main() async {
 
   // Restored before the first frame so the gallery never flashes empty and
   // then fills in.
-  final state = ArtspirationState(store: createGalleryStore());
+  final state = ArtspirationState(store: createAppStore());
   await state.restore();
 
   runApp(ArtspirationApp(state: state));

@@ -60,6 +60,85 @@ void main() {
       });
     });
 
+    test('a switched-off die is skipped by reroll and roll all', () {
+      fakeAsync((clock) {
+        final state = ArtspirationState(random: math.Random(6));
+        addTearDown(state.dispose);
+
+        state.setEnabled(DieCategory.texture, false);
+        final before = state.die(DieCategory.texture).value;
+
+        state.spin(DieCategory.texture);
+        clock.elapse(_rollSettled);
+        expect(state.die(DieCategory.texture).value, before);
+
+        state.rollAll();
+        clock.elapse(_rollSettled);
+        expect(state.die(DieCategory.texture).value, before);
+      });
+    });
+
+    test('a switched-off die is left out of saved entries', () {
+      final state = ArtspirationState(random: math.Random(7));
+      addTearDown(state.dispose);
+
+      state.setEnabled(DieCategory.texture, false);
+      state.setEnabled(DieCategory.palette, false);
+      state.saveToGallery();
+
+      final saved = state.gallery.single.values;
+      expect(saved.containsKey(DieCategory.texture), isFalse);
+      expect(saved.containsKey(DieCategory.palette), isFalse);
+      expect(saved, hasLength(DieCategory.values.length - 2));
+    });
+
+    test('the last die in play cannot be switched off', () {
+      final state = ArtspirationState(random: math.Random(8));
+      addTearDown(state.dispose);
+
+      for (final category in DieCategory.values) {
+        state.setEnabled(category, false);
+      }
+
+      expect(state.enabledCategories, hasLength(1));
+      // Saving a roll with nothing in it would produce an empty card.
+      state.saveToGallery();
+      expect(state.gallery.single.values, hasLength(1));
+    });
+
+    test('switching a die back on returns it to the roll', () {
+      fakeAsync((clock) {
+        final state = ArtspirationState(random: math.Random(9));
+        addTearDown(state.dispose);
+
+        state.setEnabled(DieCategory.mood, false);
+        state.setEnabled(DieCategory.mood, true);
+        final before = state.die(DieCategory.mood).value;
+
+        state.spin(DieCategory.mood);
+        clock.elapse(_rollSettled);
+
+        expect(state.die(DieCategory.mood).value, isNot(before));
+      });
+    });
+
+    test('switching off mid-roll stops the die spinning', () {
+      fakeAsync((clock) {
+        final state = ArtspirationState(random: math.Random(10));
+        addTearDown(state.dispose);
+
+        state.spin(DieCategory.style);
+        expect(state.die(DieCategory.style).spinning, isTrue);
+
+        state.setEnabled(DieCategory.style, false);
+        expect(state.die(DieCategory.style).spinning, isFalse);
+
+        final settled = state.die(DieCategory.style).value;
+        clock.elapse(_rollSettled);
+        expect(state.die(DieCategory.style).value, settled);
+      });
+    });
+
     test('saving captures all six values and switches to the gallery', () {
       final state = ArtspirationState(random: math.Random(3));
       addTearDown(state.dispose);

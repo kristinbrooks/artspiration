@@ -3,8 +3,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 
+import '../data/app_store.dart';
 import '../data/categories.dart';
-import '../data/gallery_store.dart';
 import '../models/gallery_entry.dart';
 
 enum AppTab { roll, gallery }
@@ -15,17 +15,28 @@ class DieState {
     required this.value,
     this.locked = false,
     this.spinning = false,
+    this.enabled = true,
   });
 
   final String value;
   final bool locked;
   final bool spinning;
 
-  DieState copyWith({String? value, bool? locked, bool? spinning}) {
+  /// Whether this die is in play. A disabled die is skipped by rolls and left
+  /// out of saved entries, so someone can work from a simpler prompt.
+  final bool enabled;
+
+  DieState copyWith({
+    String? value,
+    bool? locked,
+    bool? spinning,
+    bool? enabled,
+  }) {
     return DieState(
       value: value ?? this.value,
       locked: locked ?? this.locked,
       spinning: spinning ?? this.spinning,
+      enabled: enabled ?? this.enabled,
     );
   }
 }
@@ -36,7 +47,7 @@ class DieState {
 /// to actually change on each tick, and the interval widens as it settles
 /// (70ms, then 85, 100, 115, 130, 145, 160 — seven ticks, ~805ms total).
 class ArtspirationState extends ChangeNotifier {
-  ArtspirationState({math.Random? random, GalleryStore? store})
+  ArtspirationState({math.Random? random, AppStore? store})
       : _random = random ?? math.Random(),
         // Named parameters cannot be private, so this cannot be an
         // initializing formal.
@@ -54,7 +65,7 @@ class ArtspirationState extends ChangeNotifier {
 
   /// Null means this session is in-memory only, which is what the tests and
   /// design previews want.
-  final GalleryStore? _store;
+  final AppStore? _store;
 
   /// Writes run one at a time. Removing a card while its photo is still being
   /// written would otherwise race, and the loser would decide what's on disk.
@@ -74,6 +85,12 @@ class ArtspirationState extends ChangeNotifier {
   Future<void> get settled => _writes;
   DieState die(DieCategory category) => _dice[category]!;
 
+  /// The dice in play, in category order. Never empty.
+  List<DieCategory> get enabledCategories => [
+        for (final category in DieCategory.values)
+          if (_dice[category]!.enabled) category,
+      ];
+
   set tab(AppTab value) {
     if (_tab == value) return;
     _tab = value;
@@ -86,10 +103,29 @@ class ArtspirationState extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Spins one die. Locked dice ignore this, which is also what makes
-  /// [rollAll] skip them.
+  /// Takes a die in or out of play.
+  ///
+  /// Turning off the last enabled die is ignored: a roll with nothing in it
+  /// would save an empty entry and leave the roll screen with nothing to do.
+  void setEnabled(DieCategory category, bool enabled) {
+    final current = _dice[category]!;
+    if (current.enabled == enabled) return;
+    if (!enabled && enabledCategories.length == 1) return;
+
+    if (!enabled) {
+      // Stop a roll in flight — its timer would otherwise keep changing a value
+      // nobody can see.
+      _timers.remove(category)?.cancel();
+    }
+    _dice[category] = current.copyWith(enabled: enabled, spinning: false);
+    notifyListeners();
+    _persist();
+  }
+
+  /// Spins one die. Locked and disabled dice ignore this, which is also what
+  /// makes [rollAll] skip them.
   void spin(DieCategory category) {
-    if (_dice[category]!.locked) return;
+    if (_dice[category]!.locked || !_dice[category]!.enabled) return;
 
     _timers[category]?.cancel();
     _dice[category] = _dice[category]!.copyWith(spinning: true);
@@ -127,13 +163,16 @@ class ArtspirationState extends ChangeNotifier {
     }
   }
 
-  /// Captures all six current values — locked or not — as a new entry at the
-  /// top of the gallery, then moves to the Gallery tab.
+  /// Captures the current values of every die in play — locked or not — as a
+  /// new entry at the top of the gallery, then moves to the Gallery tab.
+  ///
+  /// Dice that are switched off are left out entirely, so a simpler prompt
+  /// saves as a simpler card.
   void saveToGallery() {
     final entry = GalleryEntry(
       id: 'g${DateTime.now().microsecondsSinceEpoch}_${_random.nextInt(1000)}',
       values: {
-        for (final category in DieCategory.values)
+        for (final category in enabledCategories)
           category: _dice[category]!.value,
       },
       rotation: _random.nextDouble() * 3 - 1.5,
@@ -158,17 +197,28 @@ class ArtspirationState extends ChangeNotifier {
     _persist();
   }
 
-  /// Loads the stored gallery. Call once before the first frame.
+  /// Loads the stored gallery and dice settings. Call once before the first
+  /// frame.
   Future<void> restore() async {
     final store = _store;
     if (store == null) return;
 
     final stored = await store.load();
-    if (stored.isEmpty) return;
 
-    _gallery
-      ..clear()
-      ..addAll(stored);
+    if (stored.entries.isNotEmpty) {
+      _gallery
+        ..clear()
+        ..addAll(stored.entries);
+    }
+
+    // Null means the file predates switchable dice, so every die stays in play.
+    if (stored.enabledDice case final enabled?) {
+      for (final category in DieCategory.values) {
+        _dice[category] =
+            _dice[category]!.copyWith(enabled: enabled.contains(category));
+      }
+    }
+
     notifyListeners();
   }
 
@@ -178,11 +228,14 @@ class ArtspirationState extends ChangeNotifier {
     final store = _store;
     if (store == null) return;
 
-    final snapshot = List<GalleryEntry>.of(_gallery);
+    final snapshot = StoredState(
+      entries: List<GalleryEntry>.of(_gallery),
+      enabledDice: enabledCategories.toSet(),
+    );
     _writes = _writes.then((_) => store.save(snapshot)).catchError(
       (Object error, StackTrace stack) {
         // A failed write costs this change, not the session.
-        debugPrint('Could not save gallery: $error\n$stack');
+        debugPrint('Could not save app state: $error\n$stack');
       },
     );
   }

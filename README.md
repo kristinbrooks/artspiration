@@ -6,6 +6,10 @@ Roll dice across eight prompt categories (Medium, Mood, Palette, Style, Setting,
 Texture, Subject, Composition), lock the results you like, reroll the rest, and
 save combos to a gallery where you attach a photo of the finished piece.
 
+Dice can be switched off individually from the `n/8` control beside the subhead,
+for a simpler prompt. A switched-off die greys out in place, sits out of rolls,
+and is left out of anything saved from then on.
+
 Built in Flutter from the design handoff in `design_handoff_artspiration/`.
 
 ## Running
@@ -77,7 +81,7 @@ the last row back below the fold:
 The gallery survives restarts. Under the app documents directory:
 
 ```
-gallery/index.json   the entries, newest first
+gallery/index.json   which dice are in play, plus the entries, newest first
 gallery/<id>.img     one file per attached photo
 ```
 
@@ -90,7 +94,12 @@ race.
 Loading is defensive by design. A corrupt index, a missing photo file, or a
 value naming a die that no longer exists all degrade to a smaller gallery rather
 than a crash — the word lists change between releases, and an entry saved by an
-older build has to keep opening.
+older build has to keep opening. Entries genuinely differ in arity: one saved
+with three dice in play sits beside one saved with eight, so nothing may assume
+every category is present.
+
+The index is at schema version 2. Version 1 had no `enabledDice` key and is read
+as every die in play.
 
 `dart:io` can't be compiled into a web build, so the store is chosen by
 conditional import: file-backed on iOS and Android, a no-op on web. The browser
@@ -98,8 +107,9 @@ targets exist for design verification, so nothing persists there.
 
 ## Not built yet
 
-- **Dice state isn't persisted** — only the gallery. Locks and current values
-  reset on launch, which is usually what you want from a prompt generator.
+- **Dice values and locks aren't persisted**, only the gallery and which dice
+  are in play. Values and locks reset on launch, which is what you want from a
+  prompt generator; which dice you use is a preference, so it persists.
 - **Photo picker test coverage.** Picking a photo works — confirmed by hand on
   the iOS simulator, with the usage strings in `Info.plist` — but nothing
   automated covers it. `image_picker` needs its platform channel faked to test,

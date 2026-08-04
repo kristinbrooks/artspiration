@@ -23,9 +23,16 @@ class DieCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final off = !state.enabled;
+
     return Sticker(
       rotation: category.cardRotation,
       borderRadius: category.borderRadius,
+      // A die that's out of play keeps its place in the grid but goes flat and
+      // colourless, so the layout doesn't reshuffle when one is switched off.
+      background: off ? AppColors.disabledFill : AppColors.cardSurface,
+      borderColor: off ? AppColors.emptyBody : AppColors.ink,
+      shadowColor: off ? AppColors.dashedRule : AppColors.ink,
       // The handoff specifies 14px vertical padding and 8px internal gaps, at
       // six dice. At eight, that pushes the last row off an iPhone screen, so
       // the card is tightened just enough for the full grid to fit.
@@ -38,9 +45,11 @@ class DieCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Flexible(child: _CategoryPill(category: category)),
+              Flexible(child: _CategoryPill(category: category, off: off)),
               const SizedBox(width: 4),
-              _LockToggle(locked: state.locked, onTap: onToggleLock),
+              // Nothing to lock on a die that isn't rolling.
+              if (!off)
+                _LockToggle(locked: state.locked, onTap: onToggleLock),
             ],
           ),
           const SizedBox(height: 6),
@@ -59,13 +68,21 @@ class DieCard extends StatelessWidget {
                   state.value,
                   maxLines: 1,
                   softWrap: false,
-                  style: AppText.kalam(19, height: 1.25),
+                  style: AppText.kalam(
+                    19,
+                    height: 1.25,
+                    color: off ? AppColors.emptyBody : AppColors.ink,
+                  ),
                 ),
               ),
             ),
           ),
           const SizedBox(height: 6),
-          _RerollButton(locked: state.locked, onTap: onReroll),
+          _RerollButton(
+            // An off die reads the same as a locked one here: dimmed and inert.
+            locked: state.locked || off,
+            onTap: onReroll,
+          ),
         ],
       ),
     );
@@ -73,9 +90,10 @@ class DieCard extends StatelessWidget {
 }
 
 class _CategoryPill extends StatelessWidget {
-  const _CategoryPill({required this.category});
+  const _CategoryPill({required this.category, this.off = false});
 
   final DieCategory category;
+  final bool off;
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +102,8 @@ class _CategoryPill extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
         decoration: BoxDecoration(
-          color: category.accent,
+          // Losing the accent is what makes an off die read as off at a glance.
+          color: off ? AppColors.emptyBody : category.accent,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Text(
