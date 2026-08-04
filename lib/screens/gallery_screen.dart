@@ -9,31 +9,35 @@ import '../theme/tokens.dart';
 import '../widgets/sticker.dart';
 
 class GalleryScreen extends StatelessWidget {
-  const GalleryScreen({super.key, required this.state});
+  const GalleryScreen({super.key, required this.state, required this.topInset});
 
   final ArtspirationState state;
+  final double topInset;
 
   @override
   Widget build(BuildContext context) {
     final entries = state.gallery;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        _GalleryHeader(count: entries.length),
-        const SizedBox(height: 16), // 14px column gap + 2px header margin
-        if (entries.isEmpty)
-          const _EmptyState()
-        else
-          for (var i = 0; i < entries.length; i++) ...[
-            if (i > 0) const SizedBox(height: 16),
-            _GalleryCard(
-              entry: entries[i],
-              onRemove: () => state.removeEntry(entries[i].id),
-              onPickImage: () => _pickImage(context, entries[i].id),
-            ),
-          ],
-      ],
+    return SingleChildScrollView(
+      padding: EdgeInsets.fromLTRB(18, topInset, 18, 18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _GalleryHeader(count: entries.length),
+          const SizedBox(height: 16), // 14px column gap + 2px header margin
+          if (entries.isEmpty)
+            const _EmptyState()
+          else
+            for (var i = 0; i < entries.length; i++) ...[
+              if (i > 0) const SizedBox(height: 16),
+              _GalleryCard(
+                entry: entries[i],
+                onRemove: () => state.removeEntry(entries[i].id),
+                onPickImage: () => _pickImage(context, entries[i].id),
+              ),
+            ],
+        ],
+      ),
     );
   }
 

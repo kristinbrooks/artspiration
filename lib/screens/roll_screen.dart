@@ -7,22 +7,54 @@ import '../widgets/die_card.dart';
 import '../widgets/sticker.dart';
 
 class RollScreen extends StatelessWidget {
-  const RollScreen({super.key, required this.state});
+  const RollScreen({super.key, required this.state, required this.topInset});
 
   final ArtspirationState state;
+  final double topInset;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const _RollHeader(),
-        const SizedBox(height: 18), // 16px column gap + 2px header margin
-        _DiceGrid(state: state),
-        const SizedBox(height: 20), // 16px gap + 4px button margin
-        _RollAllButton(onTap: state.rollAll),
-        const SizedBox(height: 16),
-        _SaveButton(onTap: state.saveToGallery),
+        Expanded(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.fromLTRB(18, topInset, 18, 18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const _RollHeader(),
+                const SizedBox(height: 18), // 16px column gap + 2px header margin
+                _DiceGrid(state: state),
+              ],
+            ),
+          ),
+        ),
+        // Pinned rather than scrolled with the dice: past six dice the grid is
+        // taller than a phone frame, and saving is the action that ends the
+        // session — it shouldn't sit below the fold. Opaque paper and the same
+        // hairline the tab bar uses, so the grid reads as scrolling underneath
+        // a fixed bar instead of being clipped mid-card.
+        DecoratedBox(
+          decoration: const BoxDecoration(
+            color: AppColors.paper,
+            border: Border(
+              top: BorderSide(color: Color(0x1F241C14), width: 2),
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(18, 10, 18, 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _RollAllButton(onTap: state.rollAll),
+                const SizedBox(height: 12),
+                _SaveButton(onTap: state.saveToGallery),
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -104,12 +136,16 @@ class _DieLogo extends StatelessWidget {
 
 /// Two columns, 14px gutter. Cards in a row share a height, matching the
 /// stretch behavior of the CSS grid they came from.
+///
+/// An odd number of dice leaves the final cell empty rather than stretching
+/// the last card across both columns — same as the CSS grid would.
 class _DiceGrid extends StatelessWidget {
   const _DiceGrid({required this.state});
 
   final ArtspirationState state;
 
-  static const _gap = 14.0;
+  // 14px in the handoff; tightened so eight dice clear an iPhone screen.
+  static const _gap = 10.0;
 
   @override
   Widget build(BuildContext context) {
@@ -118,6 +154,7 @@ class _DiceGrid extends StatelessWidget {
 
     for (var i = 0; i < categories.length; i += 2) {
       if (i > 0) rows.add(const SizedBox(height: _gap));
+      final hasSecond = i + 1 < categories.length;
       rows.add(
         IntrinsicHeight(
           child: Row(
@@ -125,7 +162,11 @@ class _DiceGrid extends StatelessWidget {
             children: [
               Expanded(child: _cardFor(categories[i])),
               const SizedBox(width: _gap),
-              Expanded(child: _cardFor(categories[i + 1])),
+              Expanded(
+                child: hasSecond
+                    ? _cardFor(categories[i + 1])
+                    : const SizedBox.shrink(),
+              ),
             ],
           ),
         ),

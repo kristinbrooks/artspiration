@@ -48,14 +48,15 @@ class _HomeShellState extends State<HomeShell> {
           builder: (context, _) {
             return Column(
               children: [
+                // Each screen scrolls itself — the roll screen keeps its
+                // buttons pinned below its own scroll area.
                 Expanded(
-                  child: SingleChildScrollView(
-                    padding: EdgeInsets.fromLTRB(18, topInset, 18, 18),
-                    child: switch (_state.tab) {
-                      AppTab.roll => RollScreen(state: _state),
-                      AppTab.gallery => GalleryScreen(state: _state),
-                    },
-                  ),
+                  child: switch (_state.tab) {
+                    AppTab.roll =>
+                      RollScreen(state: _state, topInset: topInset),
+                    AppTab.gallery =>
+                      GalleryScreen(state: _state, topInset: topInset),
+                  },
                 ),
                 BottomTabBar(
                   current: _state.tab,

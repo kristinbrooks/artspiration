@@ -105,7 +105,7 @@ void main() {
     expect(DieCategory.medium.options, contains(state.die(DieCategory.medium).value));
   });
 
-  testWidgets('app boots to the roll screen showing all six categories',
+  testWidgets('app boots to the roll screen showing every category',
       (tester) async {
     await _pumpApp(tester);
 

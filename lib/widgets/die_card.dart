@@ -26,7 +26,10 @@ class DieCard extends StatelessWidget {
     return Sticker(
       rotation: category.cardRotation,
       borderRadius: category.borderRadius,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+      // The handoff specifies 14px vertical padding and 8px internal gaps, at
+      // six dice. At eight, that pushes the last row off an iPhone screen, so
+      // the card is tightened just enough for the full grid to fit.
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -40,16 +43,28 @@ class DieCard extends StatelessWidget {
               _LockToggle(locked: state.locked, onTap: onToggleLock),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Wobble(
             active: state.spinning,
-            child: Text(
-              state.value,
-              textAlign: TextAlign.center,
-              style: AppText.kalam(19, height: 1.25),
+            child: SizedBox(
+              // Exactly one line tall, so every card is the same height and the
+              // full grid fits a phone screen whatever the roll. Long values
+              // scale down rather than wrapping. Derived from the text scaler
+              // so large-text users still get bigger type (and a taller grid
+              // they can scroll) instead of everything shrinking to fit.
+              height: MediaQuery.textScalerOf(context).scale(19) * 1.25,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  state.value,
+                  maxLines: 1,
+                  softWrap: false,
+                  style: AppText.kalam(19, height: 1.25),
+                ),
+              ),
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           _RerollButton(locked: state.locked, onTap: onReroll),
         ],
       ),

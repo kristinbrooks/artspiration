@@ -22,11 +22,13 @@ enum DieCategory {
       'Digital Paint',
       'Collage',
       'Ink Wash',
-      'Clay Sculpt',
       'Colored Pencil',
       'Gouache',
       'Linocut Print',
-      'Embroidery',
+      'Markers',
+      'Graphite/Pencils',
+      'Acrylic Paint',
+      'Pastels',
     ],
   ),
   mood(
@@ -82,6 +84,10 @@ enum DieCategory {
       'Bauhaus',
       'Vaporwave',
       'Folk Art',
+      'Realism',
+      'Abstract',
+      'Modern',
+      'Art Deco',
     ],
   ),
   setting(
@@ -120,6 +126,41 @@ enum DieCategory {
       'Tree Bark',
       'Crumpled Paper',
       'Scaly Skin',
+    ],
+  ),
+  subject(
+    label: 'Subject',
+    // Olive fills the one gap in the accent wheel — the others sit at coral,
+    // teal, purple, mustard, blue, and magenta.
+    accent: Color(0xFF5F8A2A),
+    cardRotation: -1.8,
+    pillRotation: 2,
+    corners: (22, 18, 24, 16),
+    options: [
+      'Still Life',
+      'Portrait',
+      'Cityscape',
+      'Landscape',
+      'Indoors',
+      'Seascape',
+    ],
+  ),
+  composition(
+    label: 'Composition',
+    // Indigo — the last open hue between purple and blue.
+    accent: Color(0xFF453A94),
+    cardRotation: 1.2,
+    pillRotation: -2,
+    corners: (18, 26, 16, 22),
+    options: [
+      'Rule of Thirds',
+      'Symmetry',
+      'Close-Up',
+      "Bird's Eye",
+      "Worm's Eye",
+      'Negative Space',
+      'Diagonal',
+      'Centered',
     ],
   );
 
