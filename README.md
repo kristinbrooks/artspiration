@@ -18,24 +18,45 @@ Built in Flutter from the design handoff in `design_handoff_artspiration/`.
 
 ## Running
 
+Built against Flutter 3.44.8 / Dart 3.12.
+
 ```sh
 flutter pub get
-flutter run -d chrome      # or an iOS simulator / Android emulator
 flutter test
+flutter run                 # iOS simulator, Android emulator, or Chrome
 ```
+
+Chrome is fine for looking at the design, but nothing persists there — see
+[Storage](#storage).
 
 ## Layout
 
 ```
 lib/
-  main.dart                  app entry + theme
-  data/categories.dart       the dice: word lists, accent colors, geometry
-  models/gallery_entry.dart  a saved roll
-  state/app_state.dart       dice, gallery, tab; the roll timer chain
-  screens/                   home shell, roll screen, gallery screen
-  widgets/                   sticker surface, paper grain, die card, wobble, tab bar
-tool/gallery_preview.dart    design-preview entrypoint (not shipped)
+  main.dart                   app entry, theme, scroll behavior
+  data/
+    categories.dart           the dice: word lists, accent colors, geometry
+    app_store.dart            persistence interface, StoredState
+    app_store_io.dart         file-backed store (iOS, Android)
+    app_store_web.dart        no-op store (web)
+  models/gallery_entry.dart   a saved roll
+  state/app_state.dart        dice, gallery, tab; the roll timer chain
+  theme/tokens.dart           colors, type, shape language
+  screens/
+    home_shell.dart           tab scaffolding, status bar inset
+    roll_screen.dart          the dice grid and the pinned buttons
+    gallery_screen.dart       saved rolls, photo picker
+    dice_setup_sheet.dart     which dice are in play
+  widgets/                    sticker surface, paper grain, die card,
+                              wobble, tab bar
+test/
+  widget_test.dart            dice behavior, screen smoke tests
+  app_store_test.dart         persistence against real files on disk
+tool/gallery_preview.dart     design-preview entrypoint (not shipped)
 ```
+
+`tool/gallery_preview.dart` boots into a chosen state so styling can be checked
+without tapping through — see its header for the `--dart-define` options.
 
 ## Design notes
 
@@ -46,8 +67,10 @@ normalize them:
   dice cards has its own set (see `DieCategory.corners`).
 - **A small rotation** on nearly everything, -2° to 2°.
 - **Flat offset shadows only** — `Offset(5, 5)` with zero blur, never a soft
-  shadow. `Roll All Dice` casts its shadow in mustard; everything else in ink.
-- **2–2.5px ink borders** throughout; dashed for empty and add states.
+  shadow. `Roll All Dice` and the sheet's Done button cast theirs in mustard,
+  inert dice in muted grey, everything else in ink.
+- **2–2.5px ink borders** throughout, muted grey on inert dice; dashed for
+  empty and add states.
 
 Fonts are bundled from Google Fonts under the OFL (see `assets/fonts/`). Nunito
 ships as a variable font, so weights are applied through the `wght` axis via
@@ -71,8 +94,8 @@ the last row back below the fold:
   the dice, so saving stays reachable. Each screen owns its own scrolling to
   make that possible.
 - **Spacing is tighter** than specified: card padding 14→10px, card internal
-  gaps 8→6px, grid gutter 14→10px. Radii, rotations, borders, shadows, and
-  horizontal padding are untouched.
+  gaps 8→6px, grid gutter 14→10px, header-to-grid gap 18→7px. Radii, rotations,
+  border widths, shadow offsets, and horizontal padding are untouched.
 - **Die values stay on one line**, scaling down when long, so every card is the
   same height and the layout can't shift with the roll. The handoff's wrapping
   made the fit depend on which values came up.
@@ -124,7 +147,7 @@ targets exist for design verification, so nothing persists there.
   the iOS simulator, with the usage strings in `Info.plist` — but nothing
   automated covers it. `image_picker` needs its platform channel faked to test,
   so a regression here would go unnoticed. The bytes round-trip through real
-  files *is* covered, in `test/gallery_store_test.dart`.
+  files *is* covered, in `test/app_store_test.dart`.
 - **Photos are held in memory** once loaded, all of them, for the life of the
   session. Fine for a personal gallery; a few hundred entries would want lazy
   loading from the stored files instead.
