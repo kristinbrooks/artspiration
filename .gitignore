@@ -117,3 +117,14 @@ app.*.symbols
 !**/ios/**/default.perspectivev3
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 !/dev/ci/**/Gemfile.lock
+.claude/settings.local.json
+
+# Artspiration app-specific
+.DS_Store
+.idea/
+*.iml
+
+# This file inherited `*.lock` from the Flutter SDK repo's gitignore, where the
+# SDK is a package. Artspiration is an application, so its resolved dependency
+# versions should be committed.
+!pubspec.lock

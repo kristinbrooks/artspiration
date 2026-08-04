@@ -1,0 +1,158 @@
+import 'package:flutter/widgets.dart';
+
+import '../data/categories.dart';
+import '../state/app_state.dart';
+import '../theme/tokens.dart';
+import 'sticker.dart';
+import 'wobble.dart';
+
+/// One prompt die: category pill, lock toggle, current value, reroll.
+class DieCard extends StatelessWidget {
+  const DieCard({
+    super.key,
+    required this.category,
+    required this.state,
+    required this.onToggleLock,
+    required this.onReroll,
+  });
+
+  final DieCategory category;
+  final DieState state;
+  final VoidCallback onToggleLock;
+  final VoidCallback onReroll;
+
+  @override
+  Widget build(BuildContext context) {
+    return Sticker(
+      rotation: category.cardRotation,
+      borderRadius: category.borderRadius,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Flexible(child: _CategoryPill(category: category)),
+              const SizedBox(width: 4),
+              _LockToggle(locked: state.locked, onTap: onToggleLock),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Wobble(
+            active: state.spinning,
+            child: Text(
+              state.value,
+              textAlign: TextAlign.center,
+              style: AppText.kalam(19, height: 1.25),
+            ),
+          ),
+          const SizedBox(height: 8),
+          _RerollButton(locked: state.locked, onTap: onReroll),
+        ],
+      ),
+    );
+  }
+}
+
+class _CategoryPill extends StatelessWidget {
+  const _CategoryPill({required this.category});
+
+  final DieCategory category;
+
+  @override
+  Widget build(BuildContext context) {
+    return Transform.rotate(
+      angle: AppShape.deg(category.pillRotation),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
+        decoration: BoxDecoration(
+          color: category.accent,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Text(
+          category.label.toUpperCase(),
+          maxLines: 1,
+          overflow: TextOverflow.visible,
+          style: AppText.kalam(
+            11.5,
+            color: const Color(0xFFFFFFFF),
+            letterSpacing: 0.3,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _LockToggle extends StatelessWidget {
+  const _LockToggle({required this.locked, required this.onTap});
+
+  final bool locked;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Semantics(
+        button: true,
+        toggled: locked,
+        label: locked ? 'Locked' : 'Lock',
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+          decoration: BoxDecoration(
+            color: locked ? AppColors.ink : const Color(0x00000000),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: AppColors.ink, width: 1.5),
+          ),
+          child: Text(
+            locked ? 'LOCKED' : 'LOCK',
+            style: AppText.nunito(
+              10,
+              weight: 800,
+              color: locked ? AppColors.cream : AppColors.ink,
+              letterSpacing: 0.2,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _RerollButton extends StatelessWidget {
+  const _RerollButton({required this.locked, required this.onTap});
+
+  final bool locked;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Opacity(
+      opacity: locked ? 0.6 : 1,
+      child: GestureDetector(
+        onTap: locked ? null : onTap,
+        child: Container(
+          padding: const EdgeInsets.all(7),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: locked ? AppColors.disabledFill : AppColors.cream,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: AppColors.ink, width: 2),
+          ),
+          child: Text(
+            '↻ Reroll',
+            style: AppText.nunito(
+              12.5,
+              weight: 700,
+              color: locked ? AppColors.emptyBody : AppColors.ink,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

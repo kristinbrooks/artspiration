@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<script src="./image-slot.js"></script>
+<style>
+  body{margin:0;background:#e9e2d0;}
+  @keyframes wobble{0%{transform:rotate(0deg) scale(1);}25%{transform:rotate(-6deg) scale(1.03);}50%{transform:rotate(5deg) scale(0.98);}75%{transform:rotate(-4deg) scale(1.02);}100%{transform:rotate(0deg) scale(1);}}
+  @keyframes shake{0%,100%{transform:rotate(-1.5deg);}50%{transform:rotate(1.5deg);}}
+  a{color:#7c5cbf;}
+  a:hover{color:#5c3fa0;}
+</style>
+</helmet>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="393,852" width="{{ 393 }}" height="{{ 852 }}">
+
+<div style="height:100%;display:flex;flex-direction:column;font-family:'Nunito',sans-serif;background-color:#f7f1e4;background-image:radial-gradient(circle at 1px 1px, rgba(36,28,20,0.06) 1px, transparent 0);background-size:14px 14px;">
+
+  <div style="flex:1;overflow-y:auto;padding:58px 18px 18px;box-sizing:border-box;">
+
+    <sc-if value="{{ isRoll }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;flex-direction:column;gap:16px;">
+
+        <div style="text-align:center;margin-bottom:2px;">
+          <div style="display:inline-flex;align-items:center;gap:8px;transform:rotate(-2deg);">
+            <div style="width:26px;height:26px;background:#241c14;border-radius:6px;position:relative;flex-shrink:0;">
+              <div style="position:absolute;width:5px;height:5px;background:#f7f1e4;border-radius:50%;top:4px;left:4px;"></div>
+              <div style="position:absolute;width:5px;height:5px;background:#f7f1e4;border-radius:50%;bottom:4px;right:4px;"></div>
+              <div style="position:absolute;width:5px;height:5px;background:#f7f1e4;border-radius:50%;top:10.5px;left:10.5px;"></div>
+            </div>
+            <h1 style="font-family:'Kalam',cursive;font-weight:700;font-size:28px;color:#241c14;margin:0;">Artspiration</h1>
+          </div>
+          <p style="font-family:'Nunito',sans-serif;font-size:13px;color:#6b5f4d;margin:4px 0 0;">Lock what you like, reroll the rest</p>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+
+          <div style="position:relative;background:#fffaf0;border:2.5px solid #241c14;border-radius:16px 22px 18px 24px;box-shadow:5px 5px 0 #241c14;padding:14px 12px;transform:rotate(-1.6deg);display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:4px;">
+              <span style="font-family:'Kalam',cursive;font-weight:700;font-size:11.5px;letter-spacing:0.3px;text-transform:uppercase;color:#fff;background:#e2572b;padding:3px 9px;border-radius:8px;transform:rotate(-2deg);display:inline-block;">Medium</span>
+              <button onClick="{{ toggleLockMedium }}" style="{{ mediumLockStyle }}">{{ mediumLockLabel }}</button>
+            </div>
+            <div style="{{ mediumMotion }}"><span style="font-family:'Kalam',cursive;font-weight:700;font-size:19px;color:#241c14;text-align:center;display:block;line-height:1.25;">{{ medium }}</span></div>
+            <button onClick="{{ rerollMedium }}" disabled="{{ mediumLocked }}" style="{{ mediumRerollStyle }}">&#8635; Reroll</button>
+          </div>
+
+          <div style="position:relative;background:#fffaf0;border:2.5px solid #241c14;border-radius:22px 16px 24px 18px;box-shadow:5px 5px 0 #241c14;padding:14px 12px;transform:rotate(1.4deg);display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:4px;">
+              <span style="font-family:'Kalam',cursive;font-weight:700;font-size:11.5px;letter-spacing:0.3px;text-transform:uppercase;color:#fff;background:#1f8a70;padding:3px 9px;border-radius:8px;transform:rotate(2deg);display:inline-block;">Mood</span>
+              <button onClick="{{ toggleLockMood }}" style="{{ moodLockStyle }}">{{ moodLockLabel }}</button>
+            </div>
+            <div style="{{ moodMotion }}"><span style="font-family:'Kalam',cursive;font-weight:700;font-size:19px;color:#241c14;text-align:center;display:block;line-height:1.25;">{{ mood }}</span></div>
+            <button onClick="{{ rerollMood }}" disabled="{{ moodLocked }}" style="{{ moodRerollStyle }}">&#8635; Reroll</button>
+          </div>
+
+          <div style="position:relative;background:#fffaf0;border:2.5px solid #241c14;border-radius:24px 18px 16px 22px;box-shadow:5px 5px 0 #241c14;padding:14px 12px;transform:rotate(1.8deg);display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:4px;">
+              <span style="font-family:'Kalam',cursive;font-weight:700;font-size:11.5px;letter-spacing:0.3px;text-transform:uppercase;color:#fff;background:#7c5cbf;padding:3px 9px;border-radius:8px;transform:rotate(-2deg);display:inline-block;">Palette</span>
+              <button onClick="{{ toggleLockPalette }}" style="{{ paletteLockStyle }}">{{ paletteLockLabel }}</button>
+            </div>
+            <div style="{{ paletteMotion }}"><span style="font-family:'Kalam',cursive;font-weight:700;font-size:19px;color:#241c14;text-align:center;display:block;line-height:1.25;">{{ palette }}</span></div>
+            <button onClick="{{ rerollPalette }}" disabled="{{ paletteLocked }}" style="{{ paletteRerollStyle }}">&#8635; Reroll</button>
+          </div>
+
+          <div style="position:relative;background:#fffaf0;border:2.5px solid #241c14;border-radius:18px 24px 22px 16px;box-shadow:5px 5px 0 #241c14;padding:14px 12px;transform:rotate(-1.2deg);display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:4px;">
+              <span style="font-family:'Kalam',cursive;font-weight:700;font-size:11.5px;letter-spacing:0.3px;text-transform:uppercase;color:#fff;background:#c98a1f;padding:3px 9px;border-radius:8px;transform:rotate(2deg);display:inline-block;">Style</span>
+              <button onClick="{{ toggleLockStyle }}" style="{{ styleLockStyle }}">{{ styleLockLabel }}</button>
+            </div>
+            <div style="{{ styleMotion }}"><span style="font-family:'Kalam',cursive;font-weight:700;font-size:19px;color:#241c14;text-align:center;display:block;line-height:1.25;">{{ style }}</span></div>
+            <button onClick="{{ rerollStyle }}" disabled="{{ styleLocked }}" style="{{ styleRerollStyle }}">&#8635; Reroll</button>
+          </div>
+
+          <div style="position:relative;background:#fffaf0;border:2.5px solid #241c14;border-radius:20px 16px 26px 18px;box-shadow:5px 5px 0 #241c14;padding:14px 12px;transform:rotate(-1.4deg);display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:4px;">
+              <span style="font-family:'Kalam',cursive;font-weight:700;font-size:11.5px;letter-spacing:0.3px;text-transform:uppercase;color:#fff;background:#2f6fb0;padding:3px 9px;border-radius:8px;transform:rotate(-2deg);display:inline-block;">Setting</span>
+              <button onClick="{{ toggleLockSetting }}" style="{{ settingLockStyle }}">{{ settingLockLabel }}</button>
+            </div>
+            <div style="{{ settingMotion }}"><span style="font-family:'Kalam',cursive;font-weight:700;font-size:19px;color:#241c14;text-align:center;display:block;line-height:1.25;">{{ setting }}</span></div>
+            <button onClick="{{ rerollSetting }}" disabled="{{ settingLocked }}" style="{{ settingRerollStyle }}">&#8635; Reroll</button>
+          </div>
+
+          <div style="position:relative;background:#fffaf0;border:2.5px solid #241c14;border-radius:16px 20px 18px 26px;box-shadow:5px 5px 0 #241c14;padding:14px 12px;transform:rotate(1.6deg);display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:4px;">
+              <span style="font-family:'Kalam',cursive;font-weight:700;font-size:11.5px;letter-spacing:0.3px;text-transform:uppercase;color:#fff;background:#b23a6b;padding:3px 9px;border-radius:8px;transform:rotate(2deg);display:inline-block;">Texture</span>
+              <button onClick="{{ toggleLockTexture }}" style="{{ textureLockStyle }}">{{ textureLockLabel }}</button>
+            </div>
+            <div style="{{ textureMotion }}"><span style="font-family:'Kalam',cursive;font-weight:700;font-size:19px;color:#241c14;text-align:center;display:block;line-height:1.25;">{{ texture }}</span></div>
+            <button onClick="{{ rerollTexture }}" disabled="{{ textureLocked }}" style="{{ textureRerollStyle }}">&#8635; Reroll</button>
+          </div>
+
+        </div>
+
+        <button onClick="{{ rollAll }}" style="font-family:'Kalam',cursive;font-weight:700;font-size:22px;color:#fff9ee;background:#241c14;border:2.5px solid #241c14;border-radius:20px 26px 22px 28px;box-shadow:5px 5px 0 #c98a1f;padding:16px;margin-top:4px;transform:rotate(-0.8deg);cursor:pointer;">Roll All Dice</button>
+
+        <button onClick="{{ saveToGallery }}" style="font-family:'Nunito',sans-serif;font-weight:800;font-size:14px;color:#241c14;background:#fff9ee;border:2px dashed #241c14;border-radius:14px;padding:11px;cursor:pointer;">+ Save this roll to Gallery</button>
+
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isGallery }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div style="text-align:center;margin-bottom:2px;">
+          <h1 style="font-family:'Kalam',cursive;font-weight:700;font-size:26px;color:#241c14;margin:0;transform:rotate(-1.5deg);display:inline-block;">Your Gallery</h1>
+          <p style="font-family:'Nunito',sans-serif;font-size:13px;color:#6b5f4d;margin:4px 0 0;">{{ galleryCountLabel }}</p>
+        </div>
+
+        <sc-if value="{{ hasGallery }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:16px;">
+            <sc-for list="{{ galleryItems }}" as="item" hint-placeholder-count="2">
+              <div style="{{ item.rotateStyle }}background:#fffaf0;border:2.5px solid #241c14;border-radius:18px 22px 18px 22px;box-shadow:5px 5px 0 #241c14;padding:12px;display:flex;flex-direction:column;gap:10px;">
+                <image-slot id="{{ item.imgId }}" shape="rounded" radius="12" placeholder="Drop your artwork here" style="width:100%;height:170px;"></image-slot>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                  <span style="font-family:'Nunito',sans-serif;font-weight:800;font-size:10.5px;color:#fff;background:#e2572b;padding:3px 8px;border-radius:7px;">{{ item.medium }}</span>
+                  <span style="font-family:'Nunito',sans-serif;font-weight:800;font-size:10.5px;color:#fff;background:#1f8a70;padding:3px 8px;border-radius:7px;">{{ item.mood }}</span>
+                  <span style="font-family:'Nunito',sans-serif;font-weight:800;font-size:10.5px;color:#fff;background:#7c5cbf;padding:3px 8px;border-radius:7px;">{{ item.palette }}</span>
+                  <span style="font-family:'Nunito',sans-serif;font-weight:800;font-size:10.5px;color:#fff;background:#c98a1f;padding:3px 8px;border-radius:7px;">{{ item.style }}</span>
+                  <span style="font-family:'Nunito',sans-serif;font-weight:800;font-size:10.5px;color:#fff;background:#2f6fb0;padding:3px 8px;border-radius:7px;">{{ item.setting }}</span>
+                  <span style="font-family:'Nunito',sans-serif;font-weight:800;font-size:10.5px;color:#fff;background:#b23a6b;padding:3px 8px;border-radius:7px;">{{ item.texture }}</span>
+                </div>
+                <button onClick="{{ item.remove }}" style="font-family:'Nunito',sans-serif;font-weight:600;font-size:12px;color:#a34a3a;background:none;border:none;align-self:flex-end;cursor:pointer;padding:2px 4px;">Remove</button>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ hasNoGallery }}" hint-placeholder-val="{{ false }}">
+          <div style="text-align:center;padding:48px 20px;border:2.5px dashed #b3a688;border-radius:20px;">
+            <div style="font-family:'Kalam',cursive;font-size:18px;color:#8a7c62;margin-bottom:6px;">Nothing here yet!</div>
+            <div style="font-family:'Nunito',sans-serif;font-size:13px;color:#a3977f;">Roll some dice and save a combo to start your gallery.</div>
+          </div>
+        </sc-if>
+      </div>
+    </sc-if>
+
+  </div>
+
+  <div style="flex-shrink:0;display:flex;padding:10px 18px 22px;gap:10px;background:#f7f1e4;border-top:2px solid rgba(36,28,20,0.12);">
+    <button onClick="{{ setTabRoll }}" style="{{ rollTabStyle }}">&#9689; Roll</button>
+    <button onClick="{{ setTabGallery }}" style="{{ galleryTabStyle }}">&#9635; Gallery</button>
+  </div>
+
+</div>
+
+</x-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const CATEGORIES = {
+  medium: ['Watercolor','Charcoal','Digital Paint','Collage','Ink Wash','Clay Sculpt','Colored Pencil','Gouache','Linocut Print','Embroidery'],
+  mood: ['Melancholic','Joyful','Eerie','Nostalgic','Chaotic','Serene','Whimsical','Tense','Dreamy','Triumphant'],
+  palette: ['Sunset Warm','Monochrome Blue','Neon Pop','Earth Tones','Pastel Candy','Black & White','Jewel Tones','Autumn Rust'],
+  style: ['Surrealism','Art Nouveau','Cubism','Pop Art','Ukiyo-e','Brutalism','Impressionism','Bauhaus','Vaporwave','Folk Art'],
+  setting: ['Underwater City','Abandoned Carnival','Floating Market','Desert Ruins','Neon Alleyway','Mountain Monastery','Overgrown Library','Space Station','Foggy Harbor','Enchanted Forest'],
+  texture: ['Rough Burlap','Glossy Ceramic','Cracked Earth','Soft Velvet','Rusted Metal','Woven Basket','Frosted Glass','Tree Bark','Crumpled Paper','Scaly Skin'],
+};
+
+function pick(arr, exclude) {
+  let v = arr[Math.floor(Math.random() * arr.length)];
+  if (arr.length > 1) { while (v === exclude) v = arr[Math.floor(Math.random() * arr.length)]; }
+  return v;
+}
+
+class Component extends DCLogic {
+  state = {
+    tab: 'roll',
+    dice: {
+      medium: { value: pick(CATEGORIES.medium), locked: false, spinning: false },
+      mood: { value: pick(CATEGORIES.mood), locked: false, spinning: false },
+      palette: { value: pick(CATEGORIES.palette), locked: false, spinning: false },
+      style: { value: pick(CATEGORIES.style), locked: false, spinning: false },
+      setting: { value: pick(CATEGORIES.setting), locked: false, spinning: false },
+      texture: { value: pick(CATEGORIES.texture), locked: false, spinning: false },
+    },
+    gallery: [],
+  };
+
+  timers = {};
+
+  componentWillUnmount() {
+    Object.values(this.timers).forEach(t => clearTimeout(t));
+  }
+
+  spinDie(key) {
+    if (this.state.dice[key].locked) return;
+    this.setState(s => ({ dice: { ...s.dice, [key]: { ...s.dice[key], spinning: true } } }));
+    let ticks = 0;
+    const flick = () => {
+      ticks++;
+      this.setState(s => ({ dice: { ...s.dice, [key]: { ...s.dice[key], value: pick(CATEGORIES[key], s.dice[key].value) } } }));
+      if (ticks < 7) {
+        this.timers[key] = setTimeout(flick, 70 + ticks * 15);
+      } else {
+        this.setState(s => ({ dice: { ...s.dice, [key]: { ...s.dice[key], spinning: false } } }));
+      }
+    };
+    this.timers[key] = setTimeout(flick, 70);
+  }
+
+  toggleLock(key) {
+    this.setState(s => ({ dice: { ...s.dice, [key]: { ...s.dice[key], locked: !s.dice[key].locked } } }));
+  }
+
+  rollAll() {
+    ['medium', 'mood', 'palette', 'style', 'setting', 'texture'].forEach(k => this.spinDie(k));
+  }
+
+  saveToGallery() {
+    const d = this.state.dice;
+    const id = 'g' + Date.now() + Math.floor(Math.random() * 1000);
+    const entry = {
+      id, medium: d.medium.value, mood: d.mood.value, palette: d.palette.value, style: d.style.value,
+      setting: d.setting.value, texture: d.texture.value,
+      imgId: id, rotate: (Math.random() * 3 - 1.5).toFixed(1),
+    };
+    this.setState(s => ({ gallery: [entry, ...s.gallery], tab: 'gallery' }));
+  }
+
+  removeGallery(id) {
+    this.setState(s => ({ gallery: s.gallery.filter(g => g.id !== id) }));
+  }
+
+  lockStyle(locked) {
+    return {
+      fontFamily: "'Nunito',sans-serif", fontWeight: 800, fontSize: 10, letterSpacing: 0.2,
+      textTransform: 'uppercase', padding: '4px 9px', borderRadius: 8, cursor: 'pointer',
+      border: '1.5px solid #241c14',
+      background: locked ? '#241c14' : 'transparent',
+      color: locked ? '#fff9ee' : '#241c14',
+      flexShrink: 0,
+    };
+  }
+
+  rerollStyle(locked) {
+    return {
+      fontFamily: "'Nunito',sans-serif", fontWeight: 700, fontSize: 12.5,
+      padding: '7px', borderRadius: 10, cursor: locked ? 'not-allowed' : 'pointer',
+      border: '2px solid #241c14',
+      background: locked ? '#e9e2d0' : '#fff9ee',
+      color: locked ? '#a3977f' : '#241c14',
+      opacity: locked ? 0.6 : 1,
+    };
+  }
+
+  motionStyle(spinning) {
+    return spinning ? { animation: 'wobble 0.35s ease-in-out infinite' } : {};
+  }
+
+  tabStyle(active) {
+    return {
+      flex: 1, fontFamily: "'Nunito',sans-serif", fontWeight: 800, fontSize: 13,
+      padding: '11px 8px', borderRadius: 14, cursor: 'pointer', border: '2px solid #241c14',
+      background: active ? '#241c14' : '#fffaf0',
+      color: active ? '#fff9ee' : '#241c14',
+    };
+  }
+
+  renderVals() {
+    const d = this.state.dice;
+    const mk = (key) => ({
+      [key]: d[key].value,
+      [key + 'Locked']: d[key].locked,
+      [key + 'LockLabel']: d[key].locked ? 'Locked' : 'Lock',
+      [key + 'LockStyle']: this.lockStyle(d[key].locked),
+      [key + 'RerollStyle']: this.rerollStyle(d[key].locked),
+      [key + 'Motion']: this.motionStyle(d[key].spinning),
+    });
+
+    const galleryItems = this.state.gallery.map(g => ({
+      ...g,
+      rotateStyleCss: `transform:rotate(${g.rotate}deg);`,
+      remove: () => this.removeGallery(g.id),
+    })).map(g => ({ ...g, rotateStyle: `transform:rotate(${g.rotate}deg);` }));
+
+    return {
+      isRoll: this.state.tab === 'roll',
+      isGallery: this.state.tab === 'gallery',
+      setTabRoll: () => this.setState({ tab: 'roll' }),
+      setTabGallery: () => this.setState({ tab: 'gallery' }),
+      rollTabStyle: this.tabStyle(this.state.tab === 'roll'),
+      galleryTabStyle: this.tabStyle(this.state.tab === 'gallery'),
+      ...mk('medium'), ...mk('mood'), ...mk('palette'), ...mk('style'), ...mk('setting'), ...mk('texture'),
+      toggleLockMedium: () => this.toggleLock('medium'),
+      toggleLockMood: () => this.toggleLock('mood'),
+      toggleLockPalette: () => this.toggleLock('palette'),
+      toggleLockStyle: () => this.toggleLock('style'),
+      toggleLockSetting: () => this.toggleLock('setting'),
+      toggleLockTexture: () => this.toggleLock('texture'),
+      rerollMedium: () => this.spinDie('medium'),
+      rerollMood: () => this.spinDie('mood'),
+      rerollPalette: () => this.spinDie('palette'),
+      rerollStyle: () => this.spinDie('style'),
+      rerollSetting: () => this.spinDie('setting'),
+      rerollTexture: () => this.spinDie('texture'),
+      rollAll: () => this.rollAll(),
+      saveToGallery: () => this.saveToGallery(),
+      galleryItems,
+      hasGallery: this.state.gallery.length > 0,
+      hasNoGallery: this.state.gallery.length === 0,
+      galleryCountLabel: this.state.gallery.length === 0 ? 'No saved rolls yet' : this.state.gallery.length + (this.state.gallery.length === 1 ? ' saved roll' : ' saved rolls'),
+    };
+  }
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+name: artspiration
+description: "Dice roll art prompt generator — roll, lock, reroll, and save combos to a gallery."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  # Photo library / camera access for gallery artwork slots.
+  image_picker: ^1.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^6.0.0
+  # Drives the die-roll timer chain in tests without real waiting.
+  fake_async: ^1.3.1
+
+flutter:
+  uses-material-design: true
+
+  fonts:
+    # Display type, die values. Static instances.
+    - family: Kalam
+      fonts:
+        - asset: assets/fonts/Kalam-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Kalam-Bold.ttf
+          weight: 700
+    # UI/body type. Variable font — weights are applied via FontVariation
+    # (see AppText in lib/theme/tokens.dart), not via separate weight entries.
+    - family: Nunito
+      fonts:
+        - asset: assets/fonts/Nunito-Variable.ttf
