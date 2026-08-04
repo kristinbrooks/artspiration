@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
 
 import '../data/categories.dart';
+import '../data/gallery_store.dart';
 import '../models/gallery_entry.dart';
 
 enum AppTab { roll, gallery }
@@ -35,7 +36,12 @@ class DieState {
 /// to actually change on each tick, and the interval widens as it settles
 /// (70ms, then 85, 100, 115, 130, 145, 160 — seven ticks, ~805ms total).
 class ArtspirationState extends ChangeNotifier {
-  ArtspirationState({math.Random? random}) : _random = random ?? math.Random() {
+  ArtspirationState({math.Random? random, GalleryStore? store})
+      : _random = random ?? math.Random(),
+        // Named parameters cannot be private, so this cannot be an
+        // initializing formal.
+        // ignore: prefer_initializing_formals
+        _store = store {
     for (final category in DieCategory.values) {
       _dice[category] = DieState(value: category.roll(_random));
     }
@@ -46,6 +52,14 @@ class ArtspirationState extends ChangeNotifier {
   final Map<DieCategory, Timer> _timers = {};
   final List<GalleryEntry> _gallery = [];
 
+  /// Null means this session is in-memory only, which is what the tests and
+  /// design previews want.
+  final GalleryStore? _store;
+
+  /// Writes run one at a time. Removing a card while its photo is still being
+  /// written would otherwise race, and the loser would decide what's on disk.
+  Future<void> _writes = Future.value();
+
   AppTab _tab = AppTab.roll;
 
   static const _tickCount = 7;
@@ -54,6 +68,10 @@ class ArtspirationState extends ChangeNotifier {
 
   AppTab get tab => _tab;
   List<GalleryEntry> get gallery => List.unmodifiable(_gallery);
+
+  /// Completes once queued writes have drained. Tests await this; the app does
+  /// not need to.
+  Future<void> get settled => _writes;
   DieState die(DieCategory category) => _dice[category]!;
 
   set tab(AppTab value) {
@@ -123,11 +141,13 @@ class ArtspirationState extends ChangeNotifier {
     _gallery.insert(0, entry);
     _tab = AppTab.gallery;
     notifyListeners();
+    _persist();
   }
 
   void removeEntry(String id) {
     _gallery.removeWhere((entry) => entry.id == id);
     notifyListeners();
+    _persist();
   }
 
   void attachImage(String id, Uint8List? bytes) {
@@ -135,6 +155,36 @@ class ArtspirationState extends ChangeNotifier {
     if (index == -1) return;
     _gallery[index] = _gallery[index].withImage(bytes);
     notifyListeners();
+    _persist();
+  }
+
+  /// Loads the stored gallery. Call once before the first frame.
+  Future<void> restore() async {
+    final store = _store;
+    if (store == null) return;
+
+    final stored = await store.load();
+    if (stored.isEmpty) return;
+
+    _gallery
+      ..clear()
+      ..addAll(stored);
+    notifyListeners();
+  }
+
+  /// Queued behind any write already in flight. Deliberately not awaited by
+  /// callers — the UI updates from memory and disk catches up.
+  void _persist() {
+    final store = _store;
+    if (store == null) return;
+
+    final snapshot = List<GalleryEntry>.of(_gallery);
+    _writes = _writes.then((_) => store.save(snapshot)).catchError(
+      (Object error, StackTrace stack) {
+        // A failed write costs this change, not the session.
+        debugPrint('Could not save gallery: $error\n$stack');
+      },
+    );
   }
 
   @override

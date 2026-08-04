@@ -119,11 +119,12 @@ class _GalleryCard extends StatelessWidget {
             spacing: 6,
             runSpacing: 6,
             children: [
+              // Only categories the entry actually carries. A roll saved
+              // before a die was added has no value for it, and force-
+              // unwrapping here would crash the gallery after an update.
               for (final category in DieCategory.values)
-                _ValueChip(
-                  label: entry.values[category]!,
-                  color: category.accent,
-                ),
+                if (entry.values[category] case final value?)
+                  _ValueChip(label: value, color: category.accent),
             ],
           ),
           const SizedBox(height: 10),

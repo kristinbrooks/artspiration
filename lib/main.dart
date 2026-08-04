@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
 
+import 'data/gallery_store.dart';
 import 'screens/home_shell.dart';
 import 'state/app_state.dart';
 import 'theme/tokens.dart';
 
-void main() => runApp(const ArtspirationApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Restored before the first frame so the gallery never flashes empty and
+  // then fills in.
+  final state = ArtspirationState(store: createGalleryStore());
+  await state.restore();
+
+  runApp(ArtspirationApp(state: state));
+}
 
 /// Drops Android's overscroll stretch, which scales the whole viewport when you
 /// pull past an edge — it warps the cards' borders and offset shadows and reads

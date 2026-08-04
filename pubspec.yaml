@@ -14,6 +14,8 @@ dependencies:
   cupertino_icons: ^1.0.8
   # Photo library / camera access for gallery artwork slots.
   image_picker: ^1.1.2
+  # Locates the app documents directory the gallery is stored in.
+  path_provider: ^2.1.4
 
 dev_dependencies:
   flutter_test:

@@ -72,11 +72,39 @@ the last row back below the fold:
   `main.dart`). It scales the viewport on overscroll, warping the card borders
   and offset shadows. Platform scroll physics are otherwise untouched.
 
+## Storage
+
+The gallery survives restarts. Under the app documents directory:
+
+```
+gallery/index.json   the entries, newest first
+gallery/<id>.img     one file per attached photo
+```
+
+Photos are separate files rather than inlined into the JSON, so rewriting the
+index — which happens on every save, remove, and photo attach — doesn't rewrite
+megabytes of image data. Writes are queued one at a time in `ArtspirationState`,
+because removing a card while its photo is still being written would otherwise
+race.
+
+Loading is defensive by design. A corrupt index, a missing photo file, or a
+value naming a die that no longer exists all degrade to a smaller gallery rather
+than a crash — the word lists change between releases, and an entry saved by an
+older build has to keep opening.
+
+`dart:io` can't be compiled into a web build, so the store is chosen by
+conditional import: file-backed on iOS and Android, a no-op on web. The browser
+targets exist for design verification, so nothing persists there.
+
 ## Not built yet
 
-- **Persistence.** Dice and gallery live in memory only — a restart clears them,
-  including any attached photos. `GalleryEntry` is shaped so this can drop in.
+- **Dice state isn't persisted** — only the gallery. Locks and current values
+  reset on launch, which is usually what you want from a prompt generator.
 - **Photo picker test coverage.** Picking a photo works — confirmed by hand on
   the iOS simulator, with the usage strings in `Info.plist` — but nothing
   automated covers it. `image_picker` needs its platform channel faked to test,
-  so a regression here would go unnoticed.
+  so a regression here would go unnoticed. The bytes round-trip through real
+  files *is* covered, in `test/gallery_store_test.dart`.
+- **Photos are held in memory** once loaded, all of them, for the life of the
+  session. Fine for a personal gallery; a few hundred entries would want lazy
+  loading from the stored files instead.
