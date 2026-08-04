@@ -29,6 +29,25 @@ flutter run                 # iOS simulator, Android emulator, or Chrome
 Chrome is fine for looking at the design, but nothing persists there — see
 [Storage](#storage).
 
+### Reinstalling on a physical device
+
+Use `devicectl`, not `flutter install`:
+
+```sh
+flutter build ios --release
+xcrun devicectl device install app --device <device-uuid> \
+  build/ios/iphoneos/Runner.app
+```
+
+`flutter install` calls `installApp(uninstall: true)`, so it uninstalls before
+installing — and an iOS uninstall takes the app's container with it, wiping the
+gallery and every attached photo. The `devicectl` route is an upgrade install
+that leaves the container alone; verified by checksumming a stored photo and
+index either side of one.
+
+Relevant because a free provisioning profile expires after seven days, so
+reinstalling is routine rather than rare.
+
 ## Layout
 
 ```
