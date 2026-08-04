@@ -116,11 +116,6 @@ class _DicePicker extends StatelessWidget {
   Widget build(BuildContext context) {
     final enabled = state.enabledCategories.length;
     final total = DieCategory.values.length;
-    // Filled when some dice are sitting out, so a reduced set is obvious
-    // without counting greyed cards.
-    final reduced = enabled < total;
-
-    final foreground = reduced ? AppColors.cream : AppColors.ink;
 
     return GestureDetector(
       onTap: () => showDiceSetupSheet(context, state),
@@ -130,18 +125,29 @@ class _DicePicker extends StatelessWidget {
         child: Sticker(
           rotation: 1,
           borderRadius: AppShape.radii(13, 9, 13, 9),
-          background: reduced ? AppColors.ink : AppColors.cardSurface,
+          // Always filled. This used to invert only when dice were sitting out,
+          // but the count in the label already says that, and the solid version
+          // reads far more like a button.
+          background: AppColors.ink,
           borderWidth: 2,
           showShadow: false,
           padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 6),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.tune_rounded, size: 14, color: foreground),
+              const Icon(
+                Icons.tune_rounded,
+                size: 14,
+                color: AppColors.cream,
+              ),
               const SizedBox(width: 6),
               Text(
                 'Choose dice · $enabled/$total',
-                style: AppText.nunito(12.5, weight: 800, color: foreground),
+                style: AppText.nunito(
+                  12.5,
+                  weight: 800,
+                  color: AppColors.cream,
+                ),
               ),
             ],
           ),
