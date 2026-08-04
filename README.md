@@ -143,11 +143,11 @@ targets exist for design verification, so nothing persists there.
 - **Dice values and locks aren't persisted**, only the gallery and which dice
   are in play. Values and locks reset on launch, which is what you want from a
   prompt generator; which dice you use is a preference, so it persists.
-- **Photo picker test coverage.** Picking a photo works — confirmed by hand on
-  the iOS simulator, with the usage strings in `Info.plist` — but nothing
-  automated covers it. `image_picker` needs its platform channel faked to test,
-  so a regression here would go unnoticed. The bytes round-trip through real
-  files *is* covered, in `test/app_store_test.dart`.
+- **Photo picker test coverage.** The whole path works — picking from the real
+  photo library, storing, and surviving a force-quit, confirmed by hand on a
+  physical iPhone. But nothing automated covers it: `image_picker` needs its
+  platform channel faked to test, so a regression would go unnoticed. The bytes
+  round-trip through real files *is* covered, in `test/app_store_test.dart`.
 - **Photos are held in memory** once loaded, all of them, for the life of the
   session. Fine for a personal gallery; a few hundred entries would want lazy
   loading from the stored files instead.
