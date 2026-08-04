@@ -6,9 +6,13 @@ Roll dice across eight prompt categories (Medium, Mood, Palette, Style, Setting,
 Texture, Subject, Composition), lock the results you like, reroll the rest, and
 save combos to a gallery where you attach a photo of the finished piece.
 
-Dice can be switched off individually from the `n/8` control beside the subhead,
-for a simpler prompt. A switched-off die greys out in place, sits out of rolls,
-and is left out of anything saved from then on.
+Dice can be switched off individually from the **Choose dice** button under the
+title, for a simpler prompt. A switched-off die greys out in place, sits out of
+rolls, and is left out of anything saved from then on.
+
+That button stands where the handoff's "Lock what you like, reroll the rest"
+tagline was. The eight-dice grid clears an iPhone screen by only a few pixels,
+so the header had room for the tagline or a findable control, not both.
 
 Built in Flutter from the design handoff in `design_handoff_artspiration/`.
 
@@ -75,6 +79,9 @@ the last row back below the fold:
 - **Android's overscroll stretch is disabled** (`_NoOverscrollStretch` in
   `main.dart`). It scales the viewport on overscroll, warping the card borders
   and offset shadows. Platform scroll physics are otherwise untouched.
+- **The subhead tagline is gone**, replaced by the Choose dice button. There was
+  room in the header for one or the other, and the tagline restated what the
+  Lock and Reroll buttons already say.
 
 ## Storage
 

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart' show Icons;
 import 'package:flutter/widgets.dart';
 
 import '../data/categories.dart';
@@ -26,8 +27,8 @@ class RollScreen extends StatelessWidget {
               children: [
                 _RollHeader(state: state),
                 // Was 18 (16px column gap + 2px header margin); trimmed to pay
-                // for the picker's height on the subhead line.
-                const SizedBox(height: 10),
+                // for the picker button's height.
+                const SizedBox(height: 7),
                 _DiceGrid(state: state),
               ],
             ),
@@ -92,26 +93,13 @@ class _RollHeader extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 4),
-        // The picker shares the subhead's line rather than taking one of its
-        // own: the grid clears an iPhone screen by only a few pixels, and an
-        // extra row pushes the last dice back below the fold. It rides here
-        // rather than beside the title because Kalam at 28px leaves no room.
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Flexible(
-              child: Text(
-                'Lock what you like, reroll the rest',
-                maxLines: 1,
-                style: AppText.nunito(13, color: AppColors.mutedBrown),
-              ),
-            ),
-            const SizedBox(width: 8),
-            _DicePicker(state: state),
-          ],
-        ),
+        const SizedBox(height: 5),
+        // This row was the "Lock what you like, reroll the rest" tagline. The
+        // grid clears an iPhone screen by only a few pixels, so the picker
+        // could either share that line as a cramped chip or take it over
+        // outright — and a control people can find beats a restatement of what
+        // the buttons already say.
+        _DicePicker(state: state),
       ],
     );
   }
@@ -132,25 +120,30 @@ class _DicePicker extends StatelessWidget {
     // without counting greyed cards.
     final reduced = enabled < total;
 
+    final foreground = reduced ? AppColors.cream : AppColors.ink;
+
     return GestureDetector(
       onTap: () => showDiceSetupSheet(context, state),
       child: Semantics(
         button: true,
         label: '$enabled of $total dice in play. Choose dice.',
         child: Sticker(
-          rotation: 1.5,
-          borderRadius: AppShape.radii(11, 8, 11, 8),
+          rotation: 1,
+          borderRadius: AppShape.radii(13, 9, 13, 9),
           background: reduced ? AppColors.ink : AppColors.cardSurface,
           borderWidth: 2,
           showShadow: false,
-          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
-          child: Text(
-            '$enabled/$total',
-            style: AppText.nunito(
-              12,
-              weight: 800,
-              color: reduced ? AppColors.cream : AppColors.ink,
-            ),
+          padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 6),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.tune_rounded, size: 14, color: foreground),
+              const SizedBox(width: 6),
+              Text(
+                'Choose dice · $enabled/$total',
+                style: AppText.nunito(12.5, weight: 800, color: foreground),
+              ),
+            ],
           ),
         ),
       ),
