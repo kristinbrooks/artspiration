@@ -76,6 +76,7 @@ the last row back below the fold:
 
 - **Persistence.** Dice and gallery live in memory only — a restart clears them,
   including any attached photos. `GalleryEntry` is shaped so this can drop in.
-- **Photo picker on-device check.** The picker is wired to `image_picker` and
-  the iOS usage strings are in `Info.plist`, but choosing an actual photo has
-  only been exercised by hand, not in an automated test.
+- **Photo picker test coverage.** Picking a photo works — confirmed by hand on
+  the iOS simulator, with the usage strings in `Info.plist` — but nothing
+  automated covers it. `image_picker` needs its platform channel faked to test,
+  so a regression here would go unnoticed.
